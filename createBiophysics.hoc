@@ -1,0 +1,11 @@
+v_init=-65
+global_ra=150
+Cm=1.0
+Rm=40000
+Vleak=-65
+
+proc initChannels(){
+	forall {
+		insert pas  g_pas=1/(Rm)  Ra=global_ra  e_pas=Vleak
+	}
+}

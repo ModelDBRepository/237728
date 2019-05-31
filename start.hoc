@@ -1,0 +1,90 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// Mark Cembrowski
+// Janelia Research Campus
+// June 4 2017
+//
+// Correspondence: cembrowskim@janelia.hhmi.org
+//
+// The following scripts examine cooperativity of inputs onto stylized and 
+// realistic CA1 pyramidal cells. For some simulations, outputs are visualised
+// in the NEURON environment. For others (typically, large-scale simulations), 
+//
+////////////////////////////////////////////////////////////////////////////////
+
+// LOAD GUI.
+{
+	load_file("nrngui.hoc")
+}
+
+// ENTER IN PARAMETERS IMPORTANT FOR SIMULATION.
+{
+	// Choose simulation.
+	theSim = 3
+		// =1: integration of AMPA-based input onto stylized cell, 1 trial
+		// =2: integration of AMPA-based input onto stylized cell, many trials
+		// =3: integration of AMPA and NMDA-based input onto complex cell,
+		//		1 trial
+		// =4: integration of AMPA and NMDA-based input onto complex cell,
+		//		many trials
+		
+	// Adjust scaling of synaptic strength for each synapse, if desired.
+	// Note: this are overriden in buildCell.hoc if theSim=2,4, as these
+	// simulations by definition are designed to look at the interaction of
+	// two synapses.
+	scaleAmp1 = 1
+	scaleAmp2 = 0
+		
+	// Choose branch for synapses to be allocated to. This only applies to 
+	// complex morphology, as the stylized morphology always has spines on the
+	// only dendrite.
+	dendInd = 105 
+		
+	// Choose location and temporal offset of synapses.
+	dendLoc1 = 0.5 // location for first (reference) synapse
+	dendLoc2 = 0.5  // location for second (variable) synapse. Note that this
+				   // position is overrided for "many trials" simulation option.
+	dt = 0		   // in msec, offset between two synapses.
+}
+// ENTER IN PARAMETERS ONLY SWITCHED RARELY. 
+
+objref shaftInputs
+
+{
+	// Switch synapse location from spine to shaft? 
+	// Separate param for each synapse. Assumes n=2 synapses.
+	// Set =1 if switching. 
+	// Note: this will rarely be case.
+	shaftInputs = new Vector(2)
+	shaftInputs.x[0] = 0
+	shaftInputs.x[1] = 0
+}
+
+// CONSTRUCT INTRINSIC PROPERTIES OF CELL.
+{
+	load_file("buildCell.hoc")
+}
+
+// ADD SYNAPSES.
+{
+	load_file("addSynapses.hoc")
+}
+
+// DEFINE INITIALIZATION AND RUN, SET NUMERICAL PARAMETERS.
+{
+	load_file("initializationAndRun.hoc")
+}
+
+
+// TRACK VOLTAGES.
+{
+	load_file("trackVoltages.hoc")
+}
+
+// RUN AND ANALYSE.
+{
+	if(theSim==1){load_file("singleSim.hoc")}
+	if(theSim==2){load_file("varySpaceTime.hoc")}
+	if(theSim==3){load_file("singleSim.hoc")}
+	if(theSim==4){load_file("varySpaceTime.hoc")}
+}

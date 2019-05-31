@@ -1,0 +1,31 @@
+
+// Build plot for visualisation.
+objref vPlot
+
+vPlot = new Graph()
+vPlot.addvar("head[0].v(0.5)",1,1)
+vPlot.addvar("dendTar.sec.v(dendLoc1)",2,1)
+vPlot.addvar("head[1].v(0.5)",3,1)
+graphList[0].append(vPlot)
+if(theSim>2.1){
+	vPlot.size(80,120,-68,-33)
+}else{
+	vPlot.size(80,120,-65,-40)
+}
+
+// Prep simulation.
+initChannels()
+initSynapses()	
+initSynapticWeight(weightAmpa*scaleAmp1,weightAmpa*scaleAmp2,weightNmda*scaleAmp1,weightNmda*scaleAmp2)
+initSynapticTime(100,100+dt)
+moveSpines(dendLoc1,dendLoc2) // keep spine 1 fixed, move spine 2
+updatePointers()
+init()
+
+// Run.
+run()
+
+// Get deflection in parent dendrite associated with reference synapse.
+dendMax = vPar[0].max()
+dendMax = dendMax - vPar[0].min() // remove baseline	
+peakVs = dendMax

@@ -1,0 +1,9 @@
+objref vPlot
+
+vPlot = new Graph()
+vPlot.addvar("head[0].v(0.5)",1,1)
+vPlot.addvar("dendTar.sec.v(dendLoc)",2,1)
+vPlot.addvar("neck[0].v(0.5)",3,1)
+vPlot.addvar("head[1].v(0.5)",4,1)
+graphList[0].append(vPlot)
+vPlot.size(80,120,-65,-40)

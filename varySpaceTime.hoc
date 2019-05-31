@@ -1,0 +1,63 @@
+// This script looks at interaction between two inputs. The variable input is
+// shifted, in space and time, relative to the reference input across many 
+// trials. Results are written to outputDxDt.txt.
+//
+// The output can be visualised in the R environment by calling
+// visualiseDxDt().
+objref dxs
+dxs = new Vector(nVDend) // will store x locations for synapse #2
+
+ii=0
+dendTar.sec{
+	for(x,0){
+		dxs.x[ii] = x
+		ii = ii + 1
+	}
+}
+
+dtN = 81 // choose odd number, number of time intervals
+dtI = 2 // time interval (in msec) to scan across.
+objref dts
+dts = new Vector(dtN)
+for ii=0,dtN-1{
+	curDt = ii-(dtN-1)/2
+	curDt = curDt*dtI
+	dts.x[ii] = curDt
+}
+
+objref dendSegMax
+objref peakVs
+objref parMax
+peakVs = new Matrix(dxs.size(),dts.size())
+
+objref curOut
+
+for iii=0,dxs.size()-1{
+	for jjj=0,dts.size()-1{
+		// Prep simulation.
+		initChannels()
+		initSynapses()
+		initSynapticWeight(weightAmpa*scaleAmp1,weightAmpa*scaleAmp2,weightNmda*scaleAmp1,weightNmda*scaleAmp2)
+		initSynapticTime(100,100+dts.x[jjj])
+		moveSpines(dendLoc1,dxs.x[iii]) // keep spine 1 fixed, move spine 2
+		updatePointers()
+		init()
+		
+		// Run.
+		run()
+		
+		dendMax = vPar[0].max()
+		dendMax = dendMax - vPar[0].min() // remove baseline	
+			
+		peakVs.x[iii][jjj] = dendMax
+		
+	
+	}
+}
+
+// Write output.
+objref fw
+fw = new File()
+fw.wopen("outputDxDt.txt")
+peakVs.fprint(fw,"%g\t")
+fw.close()

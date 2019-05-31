@@ -1,0 +1,86 @@
+create soma,dend,neck[nSpine],head[nSpine]
+connect soma(0),dend(0)
+
+
+
+
+connect neck[0](0),dend(dendLoc1)
+connect head[0](0),neck[0](1)
+connect neck[1](0),dend(dendLoc2)
+connect head[1](0),neck[1](1)
+
+dendD = 1
+dendL = 50
+dendN = 35
+
+somaD=65
+somaL=somaD // for "spherical" cecll
+somaN=1
+
+soma{
+	pt3dadd(0,0,0,somaD)
+	pt3dadd(0,somaL,0,somaD)
+	nseg = somaN
+}
+
+dend{
+	pt3dadd(0,somaL,0,dendD)
+	pt3dadd(0,(somaL+dendL),0,dendD)
+	nseg = dendN
+	
+	dendTar = new SectionRef()
+}
+
+
+
+for ii=0,nSpine-1{
+	
+	// if want to do on-dendrite simulations:
+	// for one synapse on dendrite, make onDend=1
+	// for two synapses on dendrite, make onDend=2
+	onDend=0
+	if(onDend>0.1){
+		print "Placing one synapse onto dendrite (effectively)"
+		if(abs(onDend-1)<0.1){
+			if(abs(ii-1)<0.1){
+				print "Spine geometry switched"
+				// switch only on second loop
+				neckL = 0.001
+				neckD = 0.5
+			}
+		}else{
+			print "Placing two synapses onto dendrite (effectively)"
+			if(abs(ii)<0.1){
+				print "Spine geometry switched"
+				// switch on first loop
+				neckL = 0.001
+				neckD = 0.5
+			}	
+		}
+	}
+
+	neck[ii]{
+		pt3dadd(0,(somaL+dendL),0,neckD)
+		pt3dadd(cos(2*PI*ii/nSpine)*neckL,(somaL+dendL),sin(2*PI*ii/nSpine)*neckL,neckD)
+		nseg=neckN
+	}
+	head[ii]{
+		pt3dadd(cos(2*PI*ii/nSpine)*neckL,(somaL+dendL),sin(2*PI*ii/nSpine)*neckL,headD)
+		pt3dadd(cos(2*PI*ii/nSpine)*(neckL+headL),(somaL+dendL),sin(2*PI*ii/nSpine)*(neckL+headL),headD)
+		nseg=headN
+	}
+}
+
+// print surface area. bloss' 2016 AT model has 13551.206  um2
+saSum = 0
+forall { for (x,0) {saSum += area(x) }}
+print "total surface area = ", saSum, " um2"
+
+
+// move two spines to new locations, as specified by user.
+// $1: x location for spine 1
+// $2: x location for spine 2
+proc moveSpines(){
+	connect neck[0](0),dend($1)
+	connect neck[1](0),dend($2)
+}

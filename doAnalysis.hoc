@@ -1,0 +1,23 @@
+// Run.
+initChannels()
+init()
+run()
+
+// Analyse results.
+
+maxHead1 = vHead[0].max()
+maxHead2 = vHead[1].max()
+maxNeck1 = vNeck[0].max()
+maxNeck2 = vNeck[1].max()
+
+objref dendSegMax
+dendSegMax = new Vector(nVDend)
+for ii=0,nVDend-1{
+	dendSegMax.x[ii] = vDend[ii].max()
+}
+
+dendMax = dendSegMax.max()
+
+dendMax = dendMax - v_init // remove baseline
+
+print dendMax

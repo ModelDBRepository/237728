@@ -1,0 +1,12 @@
+
+neckD = 0.077 // from Harnett et al 2012
+neckL = 1.58 // from Harnett et al 2012
+headD = 0.5 // estimated using bloss' data, similar to Harnett et al 2012 (=0.5)
+headL = headD // from Harnett et al 2012
+
+
+neckN = 1
+headN = 1
+
+objref dendTar // SectionRef of targeted dendrite; used later.
+

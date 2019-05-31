@@ -1,0 +1,4 @@
+objref dendTar
+dend {
+	dendTar = new SectionRef()
+}

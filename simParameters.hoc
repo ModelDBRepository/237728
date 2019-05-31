@@ -1,0 +1,27 @@
+nSpine = 2
+
+if(theSim<2.1){
+	// incorporate AMPA-only synapses
+	weightAmpa = 0.00013
+	weightNmda = 0
+	
+	// Build morphology and add biophysics.
+	load_file("loadMorph.hoc")
+	load_file("resetNSeg.hoc")
+	load_file("proofreadMorph.hoc")
+	load_file("idMorph.hoc")
+	load_file("processMorph.hoc")
+	load_file("addSpines.hoc")
+	load_file("addChannels.hoc")
+	
+}else{
+	// incorporate AMPA and NMDA synapses	
+	weightAmpa = 0.00012
+	weightNmda = 0.00012
+	
+	// Build morphology and add biophysics.
+	load_file("createMorphology.hoc")
+	load_file("createBiophysics.hoc")
+	load_file("createPointers.hoc")
+}
+

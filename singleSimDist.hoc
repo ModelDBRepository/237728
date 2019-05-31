@@ -1,0 +1,86 @@
+objref dxs,dts
+dxs = new Vector(1)
+dxs.x[0] = 0.5
+
+objref dendSegMax
+objref peakVs
+objref parMax
+peakVs = new Vector(dxs.size())
+
+// 1: linear AMPA only
+// 2: linear AMPA + NMDA
+// 3: distributed AMPA only
+// 4: distributed AMPA + NMDA
+// 5: concentrated AMPA only
+// 6: concentrated AMPA + NMDA
+theCase = 6
+
+if(theCase==1){
+	doubSyn1=0
+	doSyn2=0
+	weightAmpa = 0.00013
+	weightNmda = 0
+}
+if(theCase==2){
+	doubSyn1=0
+	doSyn2=0
+	weightAmpa = 0.00012
+	weightNmda = 0.00012
+}
+if(theCase==3){
+	doubSyn1=0
+	doSyn2=1
+	weightAmpa = 0.00013
+	weightNmda = 0
+}
+if(theCase==4){
+	doubSyn1=0
+	doSyn2=1
+	weightAmpa = 0.00012
+	weightNmda = 0.00012
+}
+if(theCase==5){
+	doubSyn1=1
+	doSyn2=0
+	weightAmpa = 0.00013
+	weightNmda = 0
+}
+if(theCase==6){
+	doubSyn1=1
+	doSyn2=0
+	weightAmpa = 0.00012
+	weightNmda = 0.00012
+}
+	
+objref curOut
+amp1 = 1+doubSyn1
+
+for iii=0,dxs.size()-1{
+	// Run.
+	initChannels()
+	initSynapses(synStart,synStart)
+	
+	//moveSpines(dendLoc,dxs.x[iii]) // keep spine 1 fixed, move spine 2
+	updatePointers()
+	initSynapticWeight(amp1*weightAmpa,doSyn2*weightAmpa,amp1*weightNmda,doSyn2*weightNmda)
+	init()
+	run()
+	
+	// Analyse results.
+	maxHead1 = vHead[0].max()
+	maxHead2 = vHead[1].max()
+	maxNeck1 = vNeck[0].max()
+	maxNeck2 = vNeck[1].max()
+	
+	dendSegMax = new Vector(nVDend)
+	for ii=0,nVDend-1{
+		dendSegMax.x[ii] = vDend[ii].max()
+	}
+
+	dendMax = vPar[0].max()
+	dendMax = dendMax - v_init // remove baseline	
+	
+	
+	peakVs.x[iii] = dendMax
+		
+}

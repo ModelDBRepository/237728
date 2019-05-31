@@ -1,0 +1,28 @@
+// Implement voltage trackers at heads, necks, and across parent dendrite.
+
+dendTar.sec{nVDend = nseg} 
+
+objref vHead[2],vNeck[2],vPar[2],vDend[nVDend]
+for ii=0,1{
+	vHead[ii] = new Vector()
+	vNeck[ii] = new Vector()
+	
+	vHead[ii].record(&head[ii].v(0.5))
+	vNeck[ii].record(&neck[ii].v(0.5))
+}
+
+vPar[0] = new Vector()
+vPar[1] = new Vector()
+
+
+for ii=0,nVDend-1{
+	vDend[ii] = new Vector()
+	vDend[ii].record(&dendTar.sec.v( (ii+1)/nVDend ))
+}
+
+proc updatePointers(){
+	theX = getParentX(0)
+	vPar[0].record(&dendTar.sec.v( theX ) )
+	theX = getParentX(1)
+	vPar[1].record(&dendTar.sec.v( theX ) )
+}

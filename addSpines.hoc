@@ -1,0 +1,59 @@
+create neck[nSpine],head[nSpine]
+
+Cell[0].dend[dendInd] { dendTar = new SectionRef() }
+
+
+
+if(abs(nSpine-2)>0.1){
+	print "Need nSpine=2 for complex morphology simulations"
+	stop
+}
+
+dendTar.sec{
+	connect neck[0](0),dendLoc1
+	connect neck[1](0),dendLoc2
+}
+connect head[0](0),neck[0](1)
+connect head[1](0),neck[1](1)
+
+
+dendTar.sec {
+	n0 = n3d()
+	nCur = n0*dendLoc1 // segs to reference synapse
+	x0 = x3d(nCur)
+	y0 = y3d(nCur)
+	z0 = z3d(nCur)
+}
+
+neck[0] {
+	pt3dadd(x0,y0,z0,neckD)
+	pt3dadd(x0+neckL,y0,z0,neckD)
+}
+neck[1] {
+	pt3dadd(x0,y0,z0,neckD)
+	pt3dadd(x0,y0+neckL,z0,neckD)
+}
+head[0] {
+	pt3dadd(x0+neckL,y0,z0,headD)
+	pt3dadd(x0+neckL+headL,y0,z0,headD)
+}
+head[1] {
+	pt3dadd(x0,y0+neckL,z0,headD)
+	pt3dadd(x0,y0+neckL+headL,z0,headD)
+}
+
+// Add to lists.
+for ii=0,1 {
+	neck[ii] {
+		cellList.append()
+		dendList.append()
+		apicalList.append()
+		tuftList.append()
+	}
+	head[ii] {
+		cellList.append()
+		dendList.append()
+		apicalList.append()
+		tuftList.append()
+	}
+}

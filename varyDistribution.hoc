@@ -1,0 +1,158 @@
+objref dxs
+dxs = new Vector(nVDend)
+
+ii=0
+dendTar.sec{
+	for(x,0){
+		dxs.x[ii] = x
+		ii = ii + 1
+	}
+}
+
+print "doing AMPA only, distributed"
+weightAmpa = 0.00013
+weightNmda = 0
+	
+
+objref peakVs
+peakVs = new Matrix(dxs.size(),6)
+
+for iii=0,dxs.size()-1{
+	// Run.
+	initChannels()
+	initSynapses(synStart,synStart)
+	
+	moveSpines(dxs.x[iii],dxs.x[iii])
+	updatePointers()
+	init()
+	run()
+	
+	dendMax = vPar[0].max()
+//	dendMax = dendMax - v_init // remove baseline	
+	dendMax = dendMax - vPar[0].min()
+	
+	peakVs.x[iii][0] = dendMax
+		
+}
+
+print "doing AMPA+NMDA, distributed"
+weightAmpa = 0.00012
+weightNmda = 0.00012
+
+for iii=0,dxs.size()-1{
+	// Run.
+	initChannels()
+	initSynapses(synStart,synStart)
+	
+	moveSpines(dxs.x[iii],dxs.x[iii])
+	updatePointers()
+	init()
+	run()
+	
+	dendMax = vPar[0].max()
+//	dendMax = dendMax - v_init // remove baseline	
+	dendMax = dendMax - vPar[0].min()
+	
+	peakVs.x[iii][1] = dendMax
+		
+}
+
+print "doing AMPA only, concentrated"
+weightAmpa = 0.00013
+weightNmda = 0
+	
+for iii=0,dxs.size()-1{
+	// Run.
+	initChannels()
+	initSynapses(synStart,synStart)
+	
+	moveSpines(dxs.x[iii],dxs.x[iii])
+	updatePointers()
+	initSynapticWeight(weightAmpa*2,0,weightNmda*2,0)
+	init()
+	run()
+	
+	dendMax = vPar[0].max()
+//	dendMax = dendMax - v_init // remove baseline	
+	dendMax = dendMax - vPar[0].min()
+	
+	peakVs.x[iii][2] = dendMax
+		
+}
+
+print "doing AMPA+NMDA, concentrated"
+weightAmpa = 0.00012
+weightNmda = 0.00012
+
+for iii=0,dxs.size()-1{
+	// Run.
+	initChannels()
+	initSynapses(synStart,synStart)
+	
+	moveSpines(dxs.x[iii],dxs.x[iii])
+	updatePointers()
+	initSynapticWeight(weightAmpa*2,0,weightNmda*2,0)
+	init()
+	run()
+	
+	dendMax = vPar[0].max()
+//	dendMax = dendMax - v_init // remove baseline	
+	dendMax = dendMax - vPar[0].min()
+	
+	peakVs.x[iii][3] = dendMax
+		
+}
+
+
+print "doing AMPA only, single"
+weightAmpa = 0.00013
+weightNmda = 0
+	
+for iii=0,dxs.size()-1{
+	// Run.
+	initChannels()
+	initSynapses(synStart,synStart)
+	
+	moveSpines(dxs.x[iii],dxs.x[iii])
+	updatePointers()
+	initSynapticWeight(weightAmpa,0,weightNmda,0)
+	init()
+	run()
+	
+	dendMax = vPar[0].max()
+//	dendMax = dendMax - v_init // remove baseline	
+	dendMax = dendMax - vPar[0].min()
+	
+	peakVs.x[iii][4] = dendMax
+		
+}
+
+print "doing AMPA+NMDA, single"
+weightAmpa = 0.00012
+weightNmda = 0.00012
+
+for iii=0,dxs.size()-1{
+	// Run.
+	initChannels()
+	initSynapses(synStart,synStart)
+	
+	moveSpines(dxs.x[iii],dxs.x[iii])
+	updatePointers()
+	initSynapticWeight(weightAmpa,0,weightNmda,0)
+	init()
+	run()
+	
+	dendMax = vPar[0].max()
+//	dendMax = dendMax - v_init // remove baseline	
+	dendMax = dendMax - vPar[0].min()
+	
+	peakVs.x[iii][5] = dendMax
+		
+}
+
+// Write output.
+objref fw
+fw = new File()
+fw.wopen("outputDist.txt")
+peakVs.fprint(fw,"%g\t")
+fw.close()

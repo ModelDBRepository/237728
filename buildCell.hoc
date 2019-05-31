@@ -1,0 +1,34 @@
+
+nSpine = 2 // define number of spines for cells
+load_file("spineGeom.hoc")
+
+
+
+// Override scale amplitudes if using many trial simulations, as these by
+// definition are designed to look for interactions between two synapses.
+if(abs(theSim-2)<0.1){
+	scaleAmp1 = 1
+	scaleAmp2 = 1
+}	
+if(abs(theSim-4)<0.1){
+	scaleAmp1 = 1
+	scaleAmp2 = 1
+}
+
+
+if(theSim>2.1){
+	// Build morphology and add biophysics for stylized cell.
+	load_file("loadMorph.hoc")
+	load_file("resetNSeg.hoc")
+	load_file("proofreadMorph.hoc")
+	load_file("idMorph.hoc")
+	load_file("processMorph.hoc")
+	load_file("addSpines.hoc")
+	load_file("addChannels.hoc")
+}else{
+	// Build morphology and add biophysics for complex cell.
+	load_file("createMorphology.hoc")
+	load_file("createBiophysics.hoc")
+	load_file("createPointers.hoc")
+}
+

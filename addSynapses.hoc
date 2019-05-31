@@ -1,0 +1,97 @@
+if(theSim<2.1){
+	// incorporate AMPA-only synapses
+	scaleSyn=8.2
+	weightAmpa = 0.00013*scaleSyn
+	weightNmda = 0
+}else{
+	// incorporate AMPA and NMDA synapses	
+	scaleSyn=6
+	weightAmpa = 0.00012*scaleSyn
+	weightNmda = 0.00012*scaleSyn
+}
+
+// allows access to parent X values. Used multiple times as helper.
+func getParentX(){
+	neck[$1]{
+		tempVal = parent_connection()
+	}
+	pop_section()
+	return tempVal
+}
+
+// ADD TWO SYNAPSES AND INVESTIGATE CLUSTERED VS. DISTRIBUTED INPUTS
+// ACROSS STRETCH OF DENDRITE.
+nSyn=nSpine 
+
+objref nsAmpa[nSyn],ncAmpa[nSyn],synAmpa[nSyn]
+objref nsNmda[nSyn],ncNmda[nSyn],synNmda[nSyn]
+
+synStart = 100 // time to start synapses
+proc initSynapses(){
+	for ii=0,nSyn-1{
+
+		shaftInput = shaftInputs.x[ii]
+		if(abs(shaftInput)<0.1){
+			head[ii]{
+				synAmpa[ii] = new Exp2Syn(0.5)
+				synNmda[ii] = new Exp2SynNMDA(0.5)
+			}
+		}else{
+			theXVal = getParentX(ii)
+			dendTar.sec{
+				synAmpa[ii] = new Exp2Syn(theXVal)
+				synNmda[ii] = new Exp2SynNMDA(theXVal)
+			}
+		}
+		
+		nsAmpa[ii] = new NetStim(0.5)
+		nsNmda[ii] = new NetStim(0.5)
+		ncAmpa[ii] = new NetCon(nsAmpa[ii],synAmpa[ii])
+		ncNmda[ii] = new NetCon(nsNmda[ii],synNmda[ii])	
+	
+		synAmpa[ii].tau1 = 0.2 // harnett et al., 2012
+		synAmpa[ii].tau2 = 2 // harnett et al., 2012
+		synAmpa[ii].e = 0
+		synNmda[ii].tau1 = 1 // harnett et al., 2012
+		synNmda[ii].tau2 = 75 // harnett et al., 2012
+		synNmda[ii].e = 0
+		
+		nsAmpa[ii].interval = 0
+		nsAmpa[ii].number = 1
+		nsAmpa[ii].noise = 0
+		nsNmda[ii].interval = 0
+		nsNmda[ii].number = 1
+		nsNmda[ii].noise = 0
+		
+		ncAmpa[ii].delay = 0
+		ncNmda[ii].delay = 0
+		ncAmpa[ii].weight = weightAmpa
+		ncNmda[ii].weight = weightNmda
+	}
+}
+
+// Change weights of synapses.
+proc initSynapticWeight(){
+	ncAmpa[0].weight = $1
+	ncAmpa[1].weight = $2
+	ncNmda[0].weight = $3
+	ncNmda[1].weight = $4
+}
+
+// Change start times of synapses.
+proc initSynapticTime(){
+	nsAmpa[0].start = $1
+	nsNmda[0].start = $1
+	nsAmpa[1].start = $2
+	nsNmda[1].start = $2
+}
+
+// move two spines to new locations, as specified by user.
+// $1: x location for spine 1
+// $2: x location for spine 2
+proc moveSpines(){
+	dendTar.sec{
+		connect neck[0](0),$1
+		connect neck[1](0),$2
+	}
+}

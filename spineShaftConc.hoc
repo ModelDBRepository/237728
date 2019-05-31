@@ -1,0 +1,83 @@
+// This script does a sister set of three simulations: compound inputs to spines,
+// compound inputs to shafts, and single inputs to spines.
+objref dgs
+dgs = new Vector()
+dgs.append(0)
+dgs.append(0.00006)
+dgs.append(0.00012)
+dgs.append(0.00018)
+dgs.append(0.00024)
+dgs.append(0.00030)
+dgs.append(0.00036)
+dgs.append(0.00042)
+dgs.append(0.00048)
+dgs.append(0.00060)
+dgs.append(0.00066)
+
+objref dendSegMax
+objref peakVs
+
+peakVs = new Matrix(dgs.size(),3) 	// 3 conditions: compound to spines;
+									// compound to shafts
+									// single inputs to spines
+									
+objref vPlot
+
+vPlot = new Graph()
+vPlot.addvar("head[0].v(0.5)",1,1)
+vPlot.addvar("dendTar.sec.v(dendLoc)",2,1)
+vPlot.addvar("head[1].v(0.5)",3,1)
+graphList[0].append(vPlot)
+if(realMorph){
+	vPlot.size(80,120,-68,-33)
+}else{
+	vPlot.size(80,120,-65,-40)
+}
+
+for iii=0,dgs.size()-1{
+	curWeight = dgs.x[iii]
+
+	// run compound to spines.
+		initChannels()
+		moveSpines(dendLoc,dendLoc)
+		updatePointers()
+		initSynapses(1)
+		initSynapticTime(synStart,synStart)
+		initSynapticWeight(curWeight,curWeight,curWeight,curWeight)
+		init()
+		run()
+		
+		dendMax = vPar[0].max()
+		dendMax = dendMax - vPar[0].min() // remove baseline
+		peakVs.x[iii][0] = dendMax
+	
+	// run compound to shafts
+		initChannels()
+		moveSpines(dendLoc,dendLoc)
+		updatePointers()
+		initSynapses(0)
+		initSynapticTime(synStart,synStart)
+		initSynapticWeight(curWeight,curWeight,curWeight,curWeight)
+		init()
+		run()
+		
+		dendMax = vPar[0].max()
+		dendMax = dendMax - vPar[0].min() // remove baseline
+		peakVs.x[iii][1] = dendMax
+	
+	// run larger single synapse
+		initChannels()
+		moveSpines(dendLoc,dendLoc)
+		updatePointers()
+		initSynapses(1)
+		initSynapticTime(synStart,synStart)
+		initSynapticWeight(curWeight*2,0,curWeight*2,0)
+		init()
+		run()
+		
+		dendMax = vPar[0].max()
+		dendMax = dendMax - vPar[0].min() // remove baseline
+		peakVs.x[iii][2] = dendMax
+	
+}
+peakVs.printf
